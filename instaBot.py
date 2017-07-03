@@ -1,4 +1,9 @@
 import requests,urllib
+from textblob import TextBlob
+from textblob.sentiments import NaiveBayesAnalyzer
+import matplotlib.pyplot as plt
+import pylab
+
 
 #Token owner : bhavikaa_singla
 #Sandbox Users : simranmadaan12
@@ -12,7 +17,6 @@ def self_info():
     print "GET request url: %s " %(request_url)
     user_info = requests.get(request_url)
     user_info = user_info.json()
-
     if user_info["meta"]["code"] == 200:
         if len(user_info["data"]):
             print "\n"
@@ -35,15 +39,16 @@ def get_user_id(insta_username):
     print "GET request url: %s" %(request_url)
     user_info = requests.get(request_url)
     user_info = user_info.json()
-
     if user_info["meta"]["code"] == 200:
         if len(user_info["data"]):
-            return user_info["data"][0]["id"]
+            return user_info["data"][0]["id"]     #it returns user id
         else:
             return None
     else:
-        print 'Status code other than 200 received!'
+        print "Status code other than 200 received!"
         exit()
+
+
 
 
 #Function declaration to get the info of a user by username
@@ -52,11 +57,9 @@ def get_user_info(insta_username):
     if user_id == None:
         print "User does not exist!!"
         exit()
-
     request_url = (BASE_URL + "users/%s?access_token=%s") % (user_id, APP_ACCESS_TOKEN)
     print "GET request url : %s" % (request_url)
     user_info = requests.get(request_url).json()
-
     if user_info["meta"]["code"] == 200:
         if len(user_info["data"]):
             print "\n"
@@ -71,12 +74,13 @@ def get_user_info(insta_username):
         print "Status code other than 200 received!"
 
 
+
+
 #Function declaration to get your own recent post
 def get_own_post():
     request_url = (BASE_URL + "users/self/media/recent/?access_token=%s") %(APP_ACCESS_TOKEN)
     print "GET request url : %s" %(request_url)
     own_media = requests.get(request_url).json()
-
     if own_media["meta"]["code"] == 200:
         if len(own_media["data"]):
             image_name = own_media["data"][0]["id"] + ".jpeg"
@@ -90,6 +94,8 @@ def get_own_post():
     return None
 
 
+
+
 #Function declaration to get the recent post of a user by username
 def get_user_post(insta_username):
     user_id = get_user_id(insta_username)
@@ -99,7 +105,6 @@ def get_user_post(insta_username):
     request_url = (BASE_URL + "users/%s/media/recent/?access_token=%s") % (user_id,APP_ACCESS_TOKEN)
     print "GET request url : %s" % (request_url)
     user_media = requests.get(request_url).json()
-
     if user_media["meta"]["code"] == 200:
         if len(user_media["data"]):
             image_name = user_media["data"][0]["id"] + ".jpeg"
@@ -113,25 +118,28 @@ def get_user_post(insta_username):
     return None
 
 
+
+
 #Function declaration to get the ID of the recent post of a user by username
 def get_post_id(insta_username):
     user_id = get_user_id(insta_username)
     if user_id == None:
-        print 'User does not exist!'
+        print "User does not exist!"
         exit()
-    request_url = (BASE_URL + 'users/%s/media/recent/?access_token=%s') % (user_id, APP_ACCESS_TOKEN)
-    print 'GET request url : %s' % (request_url)
+    request_url = (BASE_URL + "users/%s/media/recent/?access_token=%s") % (user_id, APP_ACCESS_TOKEN)
+    print "GET request url : %s" % (request_url)
     user_media = requests.get(request_url).json()
-
-    if user_media['meta']['code'] == 200:
-        if len(user_media['data']):
-            return user_media['data'][0]['id']
+    if user_media["meta"]["code"] == 200:
+        if len(user_media["data"]):
+            return user_media["data"][0]["id"]
         else:
-            print 'There is no recent post of the user!'
+            print "There is no recent post of the user!"
             exit()
     else:
-        print 'Status code other than 200 received!'
+        print "Status code other than 200 received!"
         exit()
+
+
 
 
 #Function declaration to like the recent post of a user
@@ -146,6 +154,8 @@ def like_a_post(insta_username):
         print "Like was successful!"
     else:
         print "Your like was unsuccessful. Try again!"
+
+
 
 
 #Function declaration to make a comment on the recent post of the user
@@ -163,6 +173,26 @@ def post_a_comment(insta_username):
 
 
 
+
+#Function declaration to get list of comments on the recent post of the user
+def list_of_comments(insta_username):
+    media_id = get_post_id(insta_username)
+    request_url = (BASE_URL + "media/%s/comments?access_token=%s") % (media_id ,APP_ACCESS_TOKEN)
+    print "GET request url: %s" % (request_url)
+    comments = requests.get(request_url).json()
+    i = 0
+    if comments["meta"]["code"] == 200:
+            for ele in comments["data"]:
+                print comments["data"][i]["from"]["username"] + ":" + comments["data"][i]["text"]
+                i = i + 1
+    else:
+        print "Status code other than 200 received!"
+        exit()
+
+
+
+
+#Function declaration to start the instabot application and in this, users have many choices to choose from
 def start_bot():
     print "Hey! Welcome to instaBot!"
     while True:
@@ -173,7 +203,8 @@ def start_bot():
         print "d.Get the recent post of a user by username"
         print "e.Like the recent post of a user"
         print "f.Make a comment on the recent post of a user"
-        print "g.Exit"
+        print "g.Get the list of comments on the recent post of a user "
+        print "h.Exit"
 
         choice = raw_input("Enter you choice: ")
         if choice == "a":
@@ -194,16 +225,22 @@ def start_bot():
             insta_username = raw_input("Enter the username of the user: ")
             like_a_post(insta_username)
             print "\n"
-        elif choice=="f":
+        elif choice == "f":
             insta_username = raw_input("Enter the username of the user: ")
             post_a_comment(insta_username)
             print "\n"
-        elif choice=="g":
+        elif choice == "g":
+            insta_username = raw_input("Enter the username of the user: ")
+            list_of_comments(insta_username)
+            print "\n"
+        elif choice == "h":
             exit()
         else:
             print "wrong choice"
 
 start_bot()
+
+
 
 
 
