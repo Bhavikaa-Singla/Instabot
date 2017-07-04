@@ -212,6 +212,27 @@ def recent_media_liked():
 
 
 
+#Function declaration to fetch the list of users who have liked the recent media
+def list_of_likes(insta_username):
+    media_id = get_post_id(insta_username)
+    request_url = (BASE_URL + "media/%s/likes?access_token=%s") % (media_id,APP_ACCESS_TOKEN)
+    print "GET request url : %s" %(request_url)
+    likes = requests.get(request_url).json()
+    i = 0
+    if likes["meta"]["code"] == 200:
+        if len(likes["data"]):
+            for ele in likes["data"]:
+                print likes["data"][i]["username"]
+                i = i + 1
+        else:
+            print "There is no recent post!"
+    else:
+        print "Status code other than 200 received!"
+    return None
+
+
+
+
 #Function declaration to start the instabot application and in this, users have many choices to choose from
 def start_bot():
     print "Hey! Welcome to instaBot!"
@@ -225,7 +246,8 @@ def start_bot():
         print "f.Make a comment on the recent post of a user"
         print "g.Get the list of comments on the recent post of a user "
         print "h.Get the recent media liked by the owner of the token"
-        print "i.Exit"
+        print "i.Get the list of users who have liked the recent media"
+        print "j.Exit"
 
         choice = raw_input("Enter you choice: ")
         if choice == "a":
@@ -258,6 +280,10 @@ def start_bot():
             recent_media_liked()
             print "\n"
         elif choice == "i":
+            insta_username = raw_input("Enter the username of the user: ")
+            list_of_likes(insta_username)
+            print "\n"
+        elif choice == "j":
             exit()
         else:
             print "wrong choice"
