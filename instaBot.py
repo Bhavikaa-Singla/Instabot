@@ -1,4 +1,4 @@
-import requests,urllib
+import requests,urllib                          # import requests library which is a python module that we can use to send all kinds of HTTP requests
 from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
 import matplotlib.pyplot as plt
@@ -6,7 +6,7 @@ import pylab
 
 
 #Token owner : bhavikaa_singla
-#Sandbox Users : simranmadaan12
+#Sandbox Users : brar_japji,simranmadaan12
 APP_ACCESS_TOKEN = "3988867676.7a2b6a6.c2358b1f590241b882ad58cfb23e9b41"
 BASE_URL = "https://api.instagram.com/v1/"
 
@@ -192,6 +192,26 @@ def list_of_comments(insta_username):
 
 
 
+#Function declaration to get the recent media liked by the owner of the token
+def recent_media_liked():
+    request_url = (BASE_URL + "users/self/media/liked?access_token=%s") % (APP_ACCESS_TOKEN)
+    print "GET request url : %s" % (request_url)
+    user_media = requests.get(request_url).json()
+    if user_media["meta"]["code"] == 200:
+        if len(user_media["data"]):
+            image_name = user_media["data"][0]["id"] + ".jpeg"
+            image_url = user_media["data"][0]["images"]["standard_resolution"]["url"]
+            urllib.urlretrieve(image_url, image_name)
+            print "Image has been downloaded!"
+        else:
+            print "There is no recent post!"
+    else:
+        print "Status code other than 200 received!"
+    return None
+
+
+
+
 #Function declaration to start the instabot application and in this, users have many choices to choose from
 def start_bot():
     print "Hey! Welcome to instaBot!"
@@ -204,7 +224,8 @@ def start_bot():
         print "e.Like the recent post of a user"
         print "f.Make a comment on the recent post of a user"
         print "g.Get the list of comments on the recent post of a user "
-        print "h.Exit"
+        print "h.Get the recent media liked by the owner of the token"
+        print "i.Exit"
 
         choice = raw_input("Enter you choice: ")
         if choice == "a":
@@ -234,6 +255,9 @@ def start_bot():
             list_of_comments(insta_username)
             print "\n"
         elif choice == "h":
+            recent_media_liked()
+            print "\n"
+        elif choice == "i":
             exit()
         else:
             print "wrong choice"
