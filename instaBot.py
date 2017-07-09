@@ -249,6 +249,40 @@ def list_of_likes(insta_username):
 
 
 
+#function declaration to get post of your choice in a creative way asking the criteria from the user through the console
+def media_of_your_choice(insta_username):
+    user_id = get_user_id(insta_username)                                   #it calls get_user_id function to get user id of the user
+    if user_id == None:
+        print "User does not exist!"
+        exit()
+    request_url = (BASE_URL + "users/%s/media/recent/?access_token=%s") % (user_id, APP_ACCESS_TOKEN)
+    print "GET request url : %s" % (request_url)
+    user_media = requests.get(request_url).json()
+    if user_media["meta"]["code"] == 200:
+        if len(user_media["data"]):
+            print "No. of posts of user:" + str(len(user_media["data"]))                  # it will print no of posts of paticular user
+            post_no = raw_input("Enter the post number which you want to fetch: ")        # it will ask for the post number which we want to fetch.
+            if len(post_no) > 0 and post_no.isspace() == False:                   #so that user cannot enter empty post no or spaces
+                post_no = int(post_no)                                            #to typecast string to integer
+                if post_no > 0 and post_no <= len(user_media["data"]):
+                    index = post_no - 1                                           #list has zero based indexing.So data entered must be subtracted from 1 so as to get actual data entered
+                    image_name = user_media["data"][index]["id"] + ".jpeg"
+                    image_url = user_media["data"][index]["images"]["standard_resolution"]["url"]
+                    urllib.urlretrieve(image_url, image_name)
+                    cprint("%s" % "Image has been downloaded!","blue")
+                else:
+                    cprint("%s" % "Please enter a valid post no. Try again!!", "red")
+            else:
+                cprint("%s" % "Please enter a valid post no. Try again!!", "red")
+        else:
+            cprint("%s" % "Post does not exist!", "red")
+    else:
+        cprint("%s" % "Status code other than 200 received!!", "red")
+    return None
+
+
+
+
 #Function declaration to plot user's interests on the basis of hashtag analysis
 def hashtag_analysis(insta_username):
     hash_items = {                                               #empty dictionary created named as hash_items
@@ -316,7 +350,8 @@ def start_bot():
         print "h.Get the recent media liked by the owner of the token"
         print "i.Get a list of people who have liked the recent post of a user"
         print "j.Get the user's interests based on hashtag analysis and plot it using matplotlib or word cloud"
-        print "k.Exit"
+        print "k.Get post of your choice in a creative way"
+        print "l.Exit"
 
         choice = raw_input("Enter you choice: ")
         if choice == "a":
