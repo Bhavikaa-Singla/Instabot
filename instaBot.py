@@ -349,9 +349,10 @@ def start_bot():
         print "g.Get the list of comments on the recent post of a user "
         print "h.Get the recent media liked by the owner of the token"
         print "i.Get a list of people who have liked the recent post of a user"
-        print "j.Get the user's interests based on hashtag analysis and plot it using matplotlib or word cloud"
-        print "k.Get post of your choice in a creative way"
+        print "j.Get post of your choice in a creative way"
+        print "k.Get the user's interests based on hashtag analysis and plot it using matplotlib or word cloud"
         print "l.Exit"
+
 
         choice = raw_input("Enter you choice: ")
         if choice == "a":
@@ -408,10 +409,18 @@ def start_bot():
         elif choice == "j":
             insta_username = raw_input("Enter the username of the user: ")
             if len(insta_username) > 0 and insta_username.isspace() == False:
-                hashtag_analysis(insta_username)
+                media_of_your_choice(insta_username)
+                print "\n"
             else:
                 cprint ("%s" % "Please enter a valid insta username!", "red")
         elif choice == "k":
+            insta_username = raw_input("Enter the username of the user: ")
+            if len(insta_username) > 0 and insta_username.isspace() == False:
+                hashtag_analysis(insta_username)
+                print "\n"
+            else:
+                cprint("%s" % "Please enter a valid insta username!", "red")
+        elif choice == "l":
             exit()
         else:
             cprint("%s" % "Wrong choice!", "red")
